@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uz Homi · Show Experience 2026</title>
+<meta name="description" content="Show Briefing da banda Uz Homi — Show Experience 2026. Música Boa ao Vivo.">
+
+<!-- ============================================================
+     TIPOGRAFIA
+     Display: Big Shoulders Display (condensada, cartaz de palco)
+     Corpo:   Inter
+     Utilit.: JetBrains Mono (números, labels, dados)
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;600;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="assets/uz-homi-logo.png">
+</head>
+
+<body class="is-locked">
+
+<!-- ============================================================
+     CAMADAS DE ATMOSFERA (fixas, atrás de tudo)
+     ============================================================ -->
+<div class="stage-lights" aria-hidden="true">
+  <span class="beam beam--1"></span>
+  <span class="beam beam--2"></span>
+  <span class="beam beam--3"></span>
+  <span class="beam beam--4"></span>
+</div>
+<canvas id="particles" class="particles" aria-hidden="true"></canvas>
+<div class="mouse-light" id="mouseLight" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<!-- Cursor moderno -->
+<div class="cursor" id="cursorDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+<!-- ============================================================
+     HUD — progresso, contador, navegação
+     ============================================================ -->
+<div class="progress" aria-hidden="true"><span class="progress__bar" id="progressBar"></span></div>
+
+<header class="hud hud--top" id="hudTop">
+  <img class="hud__logo" src="assets/uz-homi-logo.png" alt="Uz Homi">
+  <span class="hud__tag">Show Briefing · 2026</span>
+</header>
+
+<nav class="hud hud--bottom" id="hudBottom" aria-label="Navegação da apresentação">
+  <button class="navbtn" id="btnPrev" aria-label="Slide anterior">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    <span>Anterior</span>
+  </button>
+
+  <div class="counter" aria-live="polite">
+    <span class="counter__label" id="counterLabel"></span>
+    <span class="counter__now" id="counterNow">00</span>
+    <span class="counter__sep"></span>
+    <span class="counter__all" id="counterAll">00</span>
+  </div>
+
+  <button class="navbtn navbtn--next" id="btnNext" aria-label="Próximo slide">
+    <span>Próximo</span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+  </button>
+</nav>
+
+<!-- Trilha de capítulos (lateral) -->
+<aside class="rail" id="rail" aria-label="Índice de capítulos"></aside>
+
+<!-- ============================================================
+     DECK
+     ============================================================ -->
+<main class="deck" id="deck">
+
+  <!-- ---------- INTRO ---------- -->
+  <section class="slide slide--intro is-active" data-chapter="Abertura" data-title="Intro">
+    <div class="intro">
+      <img class="intro__logo r" data-r="1" src="assets/uz-homi-logo.png" alt="Logo da banda Uz Homi">
+      <p class="eyebrow r" data-r="2">Briefing da Banda</p>
+      <h1 class="intro__title r" data-r="3">
+        <span class="line">Show</span>
+        <span class="line line--gold">Experience</span>
+      </h1>
+      <div class="intro__year r" data-r="4"><span>2026</span></div>
+      <p class="intro__sub r" data-r="5">"Música Boa ao Vivo"</p>
+      <button class="cta r" data-r="6" id="btnStart">
+        <span class="cta__label">Iniciar</span>
+        <span class="cta__glow"></span>
+      </button>
+      <p class="intro__hint r" data-r="7">Use as setas, o scroll ou a barra de espaço para navegar</p>
+    </div>
+  </section>
+
+  <!-- ---------- INFORMAÇÕES GERAIS ---------- -->
+  <section class="slide slide--info" data-chapter="O Show" data-title="Informações Gerais">
+    <div class="wrap wrap--wide">
+      <p class="eyebrow r" data-auto-chapter data-r="1"></p>
+      <h2 class="h-display r" data-r="2">Informações Gerais</h2>
+
+      <div class="countdown r" data-r="3" id="countdown">
+        <span class="countdown__k">Faltam</span>
+        <span class="countdown__v" id="countdownValue">--</span>
+        <span class="countdown__k">para a primeira nota</span>
+      </div>
+
+      <div class="facts">
+        <div class="fact r" data-r="4">
+          <span class="fact__k">Data</span>
+          <span class="fact__v">17.07.2026</span>
+          <span class="fact__d">Sexta-feira</span>
+        </div>
+        <div class="fact fact--warn r" data-r="5">
+          <span class="fact__k">Passagem de som</span>
+          <span class="fact__v">15:30</span>
+          <span class="fact__d">Todos no local, sem atraso</span>
+        </div>
+        <div class="fact fact--hot r" data-r="6">
+          <span class="fact__k">Início do show</span>
+          <span class="fact__v">23:00</span>
+          <span class="fact__d">A praça já vai estar cheia</span>
+        </div>
+        <div class="fact r" data-r="7">
+          <span class="fact__k">Público estimado</span>
+          <span class="fact__v"><b id="crowdCount">0</b> mil</span>
+          <span class="fact__d">2 a 3 mil pessoas · praça pública</span>
+        </div>
+      </div>
+
+      <p class="note r" data-r="8">Praça pública, público aberto: quem passar tem que parar.</p>
+    </div>
+  </section>
+
+  <!-- ---------- MISSÃO ---------- -->
+  <section class="slide slide--statement" data-chapter="Missão" data-title="Nossa Missão">
+    <div class="wrap">
+      <p class="eyebrow r" data-auto-chapter data-r="1"></p>
+      <h2 class="h-display r" data-r="2">Nossa Missão</h2>
+      <div class="statement">
+        <p class="statement__strike r" data-r="3">Não tocamos músicas.</p>
+        <p class="statement__hero r" data-r="4">Criamos <em>experiências</em>.</p>
+        <p class="statement__tail r" data-r="5">Cada pessoa que entra em nosso show deve sair levando uma lembrança.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- 2 · PROPÓSITO ---------- -->
+  <section class="slide" data-chapter="Propósito" data-title="Nosso Propósito">
+    <div class="wrap">
+      <p class="eyebrow r" data-auto-chapter data-r="1"></p>
+      <h2 class="h-display r" data-r="2">Nosso Propósito</h2>
+      <p class="lead r" data-r="3">O público não compra repertório.</p>
+
+      <div class="buys">
+        <div class="buy r" data-r="4"><span class="buy__k">O público compra</span><span class="buy__v">Emoções</span></div>
+        <div class="buy r" data-r="5"><span class="buy__k">O público compra</span><span class="buy__v">Memórias</span></div>
+        <div class="buy r" data-r="6"><span class="buy__k">O público compra</span><span class="buy__v">Diversão</span></div>
+        <div class="buy r" data-r="7"><span class="buy__k">O público compra</span><span class="buy__v">Conexão</span></div>
+      </div>
+
+      <p class="note r" data-r="8">Repertório é o meio. A emoção é o produto.</p>
+    </div>
+  </section>
+
+  <!-- ---------- 3 · A CURVA DO SHOW (assinatura) ---------- -->
+  <section class="slide slide--curve" data-chapter="A Curva" data-title="A Curva do Show">
+    <div class="wrap wrap--wide">
+      <p class="eyebrow r" data-auto-chapter data-r="1"></p>
+      <h2 class="h-display r" data-r="2">A Curva do Show</h2>
+      <p class="lead lead--sm r" data-r="3">A energia da noite tem desenho. Ela sobe, respira e explode — nessa ordem.</p>
+
+      <div class="curve r" data-r="4">
+        <div class="curve__meter">
+          <span>Energia</span>
+          <b id="curveValue">0%</b>
+        </div>
+        <svg class="curve__svg" id="curveSvg" viewBox="0 0 1000 380" preserveAspectRatio="none" aria-label="Gráfico da curva de energia do show">
+          <defs>
+            <linearGradient id="curveStroke" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%"   stop-color="#2ED9A0"/>
+              <stop offset="22%"  stop-color="#FFC857"/>
+              <stop offset="42%"  stop-color="#FF8C42"/>
+              <stop offset="62%"  stop-color="#C9A227"/>
+              <stop offset="82%"  stop-color="#E63946"/>
+              <stop offset="100%" stop-color="#F5E7C1"/>
+            </linearGradient>
+            <linearGradient id="curveFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#E9C46A" stop-opacity=".28"/>
+              <stop offset="100%" stop-color="#E9C46A" stop-opacity="0"/>
+            </linearGradient>
+            <filter id="curveGlow" x="-20%" y="-40%" width="140%" height="180%">
+              <feGaussianBlur stdDeviation="8" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <g class="curve__grid" id="curveGrid"></g>
+          <path class="curve__area" id="curveArea" fill="url(#curveFill)"></path>
+          <path class="curve__line" id="curveLine" fill="none" stroke="url(#curveStroke)" stroke-width="4"
+                stroke-linecap="round" stroke-linejoin="round" filter="url(#curveGlow)"></path>
+          <g id="curveDots"></g>
+        </svg>
+        <div class="curve__axis" id="curveAxis"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- 4 · REPERTÓRIO ---------- -->
+  <section class="slide slide--repertoire" data-chapter="Repertório" data-title="O Repertório">
+    <div class="wrap wrap--wide">
+      <p class="eyebrow r" data-auto-chapter data-r="1"></p>
+      <h2 class="h-display r" data-r="2">O Repertório</h2>
+      <p class="lead lead--sm r" data-r="3">Seis blocos. Cada um com um objetivo emocional próprio. Toque um bloco para abrir.</p>
+      <div class="blocks r" data-r="4" id="blocks"></div>
+      <div class="rep-actions r" data-r="8">
+        <button class="cta cta--ghost" id="btnPdf">
+          <span class="cta__label">Gerar PDF para o time</span>
+        </button>
+        <span class="rep-actions__hint">Abre a impressão — escolha "Salvar como PDF" e envie no grupo</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       DOCUMENTO PARA IMPRESSÃO / PDF
+       Invisível na tela; só aparece ao imprimir (ver @media print).
+       Montado por script.js a partir dos mesmos dados da apresentação.
+       ============================================================ -->
+  <div class="printdoc" id="printDoc" aria-hidden="true"></div>
+
+  <!-- ---------- 5 a 10 · BLOCOS (gerados via script.js) ---------- -->
+  <!-- placeholder: as seções dos blocos são injetadas aqui pelo script -->
+
+  <!-- ---------- 11 · PRESENÇA DE PALCO ---------- -->
+  <section class="slide" data-chapter="Presença" data-title="Presença de Palco" data-anchor="presenca">
+    <div class="wrap wrap--wide">
+      <p class="eyebrow r" data-auto-chapter data-r="1"></p>
+      <h2 class="h-display r" data-r="2">Presença de Palco</h2>
+      <p class="lead lead--sm r" data-r="3">O som é metade. O resto é o que o público vê.</p>
+      <div class="grid-cards" id="presence"></div>
+    </div>
+  </section>
+
+  <!-- ---------- 12 · ERROS ---------- -->
+  <section class="slide slide--errors" data-chapter="Erros" data-title="Erros que não quero">
+    <div class="wrap wrap--wide">
+      <p class="eyebrow eyebrow--light r" data-auto-chapter data-r="1"></p>
+      <h2 class="h-display r" data-r="2">Erros que não quero</h2>
+      <p class="lead lead--sm r" data-r="3">Nenhum destes tem desculpa. Todos derrubam o show em segundos.</p>
+      <div class="errors" id="errors"></div>
+    </div>
+  </section>
+
+  <!-- ---------- 13 · CADA MÚSICO ---------- -->
+  <section class="slide slide--crew" data-chapter="A Banda" data-title="Formação da Banda">
+    <div class="wrap wrap--wide">
+      <p class="eyebrow r" data-auto-chapter data-r="1"></p>
+      <h2 class="h-display r" data-r="2">Formação da Banda</h2>
+      <p class="lead lead--sm r" data-r="3">Sete no palco. Ninguém segura o show sozinho — cada posição tem uma função clara.</p>
+      <div class="crew" id="crew"></div>
+    </div>
+  </section>
+
+  <!-- ---------- EQUIPE ---------- -->
+  <section class="slide slide--staff" data-chapter="Equipe" data-title="Equipe">
+    <div class="wrap">
+      <p class="eyebrow r" data-auto-chapter data-r="1"></p>
+      <h2 class="h-display r" data-r="2">Equipe</h2>
+      <p class="lead lead--sm r" data-r="3">Quem não sobe no palco também faz o show acontecer.</p>
+      <div class="staff" id="staff"></div>
+    </div>
+  </section>
+
+  <!-- ---------- VESTIMENTA ---------- -->
+  <section class="slide slide--dress" data-chapter="Vestimenta" data-title="Vestimenta">
+    <div class="wrap wrap--wide">
+      <p class="eyebrow r" data-auto-chapter data-r="1"></p>
+      <h2 class="h-display r" data-r="2">Vestimenta</h2>
+      <p class="lead lead--sm r" data-r="3">Preto dos pés à gola, tênis branco e um ponto de vermelho. Sem exceção — a banda tem que parecer uma banda.</p>
+      <div class="dress" id="dress"></div>
+      <p class="note r" data-r="8">Uniforme conferido na passagem de som, às 15:30.</p>
+    </div>
+  </section>
+
+  <!-- ---------- COMPROMISSO ---------- -->
+  <section class="slide slide--commit" data-chapter="Compromisso" data-title="Compromisso">
+    <div class="wrap">
+      <p class="eyebrow r" data-auto-chapter data-r="1"></p>
+      <h2 class="h-display r" data-r="2">Compromisso</h2>
+      <div class="commit">
+        <p class="commit__line r" data-r="3">Cada <em>nota</em> importa.</p>
+        <p class="commit__line r" data-r="4">Cada <em>sorriso</em> importa.</p>
+        <p class="commit__line r" data-r="5">Cada <em>segundo</em> importa.</p>
+      </div>
+      <div class="commit__stat r" data-r="6">
+        <span class="commit__num"><b id="peopleCount">0</b>+</span>
+        <span class="commit__cap">pessoas na praça, amanhã, por nossa conta</span>
+      </div>
+      <p class="commit__tail r" data-r="7">Somos responsáveis pela experiência de milhares de pessoas.</p>
+    </div>
+  </section>
+
+  <!-- ---------- FINAL ---------- -->
+  <section class="slide slide--finale" data-chapter="Final" data-title="Amanhã">
+    <div class="finale" id="finale">
+      <img class="finale__logo" src="assets/uz-homi-logo.png" alt="Uz Homi">
+      <div class="finale__seq">
+        <p class="fseq" data-step="1">Amanhã<br>não é apenas<br>mais um show.</p>
+        <p class="fseq fseq--gold" data-step="2">É uma experiência.</p>
+        <p class="fseq fseq--sign" data-step="3">Uz Homi<br><span>Música Boa ao Vivo.</span></p>
+      </div>
+      <button class="cta cta--ghost" id="btnReplay">
+        <span class="cta__label">Rever o briefing</span>
+      </button>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================
+     RODAPÉ / AUTORIA
+     ============================================================ -->
+<footer class="credit" id="credit">
+  <img src="assets/leandro-fonseca.png" alt="Leandro Fonseca — Trainer em PNL">
+  <span>Projeto por <b>Leandro Fonseca</b></span>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
