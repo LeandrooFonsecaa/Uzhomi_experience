@@ -587,6 +587,71 @@ function montarPdf() {
     </footer>`;
 }
 
+/** Repertório em texto puro, formatado para o grupo do WhatsApp. */
+function textoRepertorio() {
+  let n = 0;
+  const linhas = [
+    `*SHOW BAILE 2026 — REPERTÓRIO*`,
+    `${SHOW.data} · ${SHOW.diaSemana}`,
+    `Passagem de som ${SHOW.passagemSom} · Show ${SHOW.inicio}`,
+    ''
+  ];
+
+  BLOCOS.forEach(b => {
+    const itens = SETLIST.filter(s => s.bloco === b.id);
+    if (!itens.length) return;
+    linhas.push(`*${b.nome.toUpperCase()}*`);
+    itens.forEach(item => {
+      n++;
+      item.musicas.forEach((m, j) => {
+        const prefixo = j === 0 ? `${n}. ` : '   ';
+        const tom = m.tom ? ` - ${m.tom}` : ' - (tom a definir)';
+        const part = m.part ? ` [part. ${m.part}]` : '';
+        linhas.push(`${prefixo}${m.nome.toUpperCase()}${tom}${part}`);
+      });
+      if (item.part) linhas[linhas.length - 1] += ` [part. ${item.part}]`;
+    });
+    linhas.push('');
+  });
+
+  const comObs = SETLIST.filter(i => i.obs?.length).length;
+  linhas.push(`_${SETLIST.length} itens · ${SETLIST.reduce((t, i) => t + i.musicas.length, 0)} músicas_`);
+  linhas.push(`_${comObs} itens têm observações técnicas — estão no PDF do briefing._`);
+  linhas.push('');
+  linhas.push('Banda Uz Homi · Música Boa ao Vivo');
+
+  return linhas.join('\n');
+}
+
+/** Liga os botões de envio do repertório. */
+function ligarAcoesRepertorio() {
+  const dica = $('#repHint');
+  const avisar = msg => {
+    const original = dica.textContent;
+    dica.textContent = msg;
+    dica.classList.add('is-ok');
+    setTimeout(() => { dica.textContent = original; dica.classList.remove('is-ok'); }, 3200);
+  };
+
+  // PDF: abre a impressão do navegador (o usuário escolhe "Salvar como PDF").
+  $('#btnPdf').addEventListener('click', () => window.print());
+
+  // WhatsApp: abre o app já com o repertório em texto; o usuário escolhe o grupo.
+  $('#btnWpp').addEventListener('click', () => {
+    window.open(`https://wa.me/?text=${encodeURIComponent(textoRepertorio())}`, '_blank', 'noopener');
+  });
+
+  // Cópia: útil para colar em qualquer lugar (e-mail, notas, outro grupo).
+  $('#btnCopy').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(textoRepertorio());
+      avisar('✓ Repertório copiado — é só colar no grupo');
+    } catch {
+      avisar('Não consegui copiar — use o botão do WhatsApp');
+    }
+  });
+}
+
 /** Anexo do repertório: uma página por item, depois do slide final. */
 function montarSetlist() {
   const deck = $('#deck');
@@ -639,6 +704,30 @@ function montarMarcaDagua() {
     img.alt = '';
     img.setAttribute('aria-hidden', 'true');
     s.appendChild(img);
+  });
+}
+
+/* ----------------------------------------------------------------
+   IMAGEM QUE NÃO CARREGA NÃO PODE QUEBRAR A APRESENTAÇÃO.
+   Se um logo faltar (ex.: a pasta assets/ não subiu no deploy), entra
+   um wordmark tipográfico no lugar do ícone de imagem quebrada.
+   ---------------------------------------------------------------- */
+function protegerImagens() {
+  const cair = img => {
+    if (img.classList.contains('intro__logo') || img.classList.contains('finale__logo')) {
+      const w = document.createElement('span');
+      w.className = `wordmark ${img.classList.contains('finale__logo') ? 'wordmark--xl' : ''}`;
+      w.textContent = 'Uz Homi';
+      img.replaceWith(w);
+    } else {
+      img.remove();   // marca d'água, HUD e crédito somem sem deixar buraco
+    }
+  };
+
+  $$('img').forEach(img => {
+    // A imagem pode ter falhado antes deste script rodar: checa o estado também.
+    if (img.complete && img.naturalWidth === 0) cair(img);
+    else img.addEventListener('error', () => cair(img), { once: true });
   });
 }
 
@@ -745,7 +834,6 @@ const Deck = {
     $('#btnNext').addEventListener('click', () => this.proximo());
     $('#btnPrev').addEventListener('click', () => this.anterior());
     $('#btnStart').addEventListener('click', () => this.proximo());
-    $('#btnPdf').addEventListener('click', () => window.print());
     $('#btnReplay').addEventListener('click', () => this.ir(0));
 
     // Scroll / trackpad — com trava para não pular vários slides
@@ -1039,9 +1127,11 @@ function iniciar() {
   montarVestimenta();
   montarCurva();
   montarPdf();             // folha do repertório para impressão / PDF
+  ligarAcoesRepertorio();  // botões WhatsApp / PDF / copiar
   montarSetlist();          // anexo do repertório, depois do slide final
   montarMarcaDagua();
   numerarCapitulos();
+  protegerImagens();       // precisa vir depois de toda <img> existir
 
   Deck.iniciar();
   iniciarParticulas();

@@ -1033,6 +1033,17 @@ svg path{ fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; 
 .credit span{ font-family:var(--f-mono); font-size:.58rem; letter-spacing:.16em; text-transform:uppercase; color:var(--smoke); }
 .credit b{ color:var(--gold); font-weight:600; }
 
+/* Wordmark: entra no lugar do logo quando a imagem não carrega */
+.wordmark{
+  display:block; margin-bottom:1.4rem;
+  font-family:var(--f-display); font-weight:900; text-transform:uppercase;
+  font-size:clamp(2.6rem,7vw,5rem); line-height:.9; letter-spacing:.02em;
+  background:linear-gradient(100deg, var(--gold-deep), var(--gold-hi) 50%, var(--gold));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  filter:drop-shadow(0 0 40px rgba(233,196,106,.4));
+}
+.wordmark--xl{ font-size:clamp(3.4rem,11vw,8rem); }
+
 /* ============================================================
    20 · RESPONSIVO — notebook, TV, projetor, ultrawide, mobile
    ============================================================ */
@@ -1070,8 +1081,14 @@ svg path{ fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; 
   .hud__tag{ display:none; }
   .navbtn span{ display:none; }
   .navbtn{ padding:.62rem; }
-  .credit{ left:50%; transform:translateX(-50%); bottom:.5rem; }
-  .credit.is-on{ transform:translateX(-50%); }
+  /* O rodapé de autoria colidia com o contador: no celular ele sobe
+     para o topo direito, onde a barra tem espaço sobrando. */
+  .credit{
+    left:auto; right:var(--gutter); bottom:auto; top:0; height:60px;
+    transform:translateY(-6px);
+  }
+  .credit.is-on{ transform:none; }
+  .credit img{ height:20px; }
   .credit span{ display:none; }
   .buys, .blocks, .grid-cards, .crew, .errors, .facts, .staff{ grid-template-columns:1fr; }
   .song{ grid-template-columns:auto 1fr; gap:.7rem 1rem; padding:1.1rem 1.2rem; }
